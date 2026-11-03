@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:developer';
 
 import 'package:facebook_app_events/facebook_app_events.dart';
+import 'package:flutter/foundation.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
 import 'package:posterapp/dashboard/view/dashboard_screen.dart';
@@ -24,7 +25,7 @@ class PaymentViewModel extends GetxController {
   RxBool isSubscription = true.obs;
   RxBool isProgressLoad = false.obs;
   RxInt isYearlyIndex = 0.obs;
-final facebookAppEvents=FacebookAppEvents();
+  final facebookAppEvents = FacebookAppEvents();
   RxBool paymentSucess = false.obs;
   RxBool hasTrial = true.obs;
   RxString planId = "".obs;
@@ -42,8 +43,7 @@ final facebookAppEvents=FacebookAppEvents();
   final api = PaymentApi(buildDio());
   Rxn<PaymentDetailModel> paymentDetailsModelRx = Rxn<PaymentDetailModel>();
   RxList<Datum> paymentData = <Datum>[].obs;
-  RxBool isRazorPay=false.obs;
-
+  RxBool isRazorPay = false.obs;
 
   RxBool isOldGateway = false.obs;
   RxInt recurringCount = 0.obs;
@@ -63,7 +63,6 @@ final facebookAppEvents=FacebookAppEvents();
   /// endpoint more than once per payment — cannot stack the identical toast twice and make
   /// one failure look like two. Cleared on any successful response.
   String? _lastApiError;
-
 
   void _showApiError(dynamic body, {required String fallback}) {
     final msg = _messageFrom(body) ?? fallback;
@@ -113,12 +112,13 @@ final facebookAppEvents=FacebookAppEvents();
     _verifySecondCheckTimer = null;
     _verifyRedirectTimer = null;
   }
+
   Future<void> getPaymentDetails() async {
     setgetRxRequestStatus(Status.loading);
     try {
       String token = BharatStorage.getAuthKey() ?? '';
       final res = await api.getPaymentDetails('Bearer $token');
-log("dkfjhg");
+      log("dkfjhg");
       if (res.response.statusCode == 200) {
         // Direct UPI tunables ride along on this response when the backend supplies them.
         // Absent or malformed, every value falls back to its compiled-in default, so this
@@ -129,17 +129,18 @@ log("dkfjhg");
         paymentDetailsModelRx.value = PaymentDetailModel.fromJson(res.data);
 
         paymentData.assignAll(paymentDetailsModelRx.value!.data);
-        videoUrl.value = paymentDetailsModelRx.value!.videoUrl ?? '';
+        videoUrl.value = paymentDetailsModelRx.value!.videoUrl;
         if (videoUrl.value.isNotEmpty) {
           setupVideo(videoUrl.value);
         }
         isOldGateway.value = paymentDetailsModelRx.value!.is_oldgatway;
-        hasTrial.value=paymentDetailsModelRx.value!.hasTrial;
+        hasTrial.value = paymentDetailsModelRx.value!.hasTrial;
         BharatStorage.setTrial(hasTrial.value);
 
         trialDays.value = paymentData[isYearlyIndex.value].trialDays ?? 0;
         trialAmount.value = paymentData[isYearlyIndex.value].trialAmount ?? 0;
-        trialDisplayAmount.value = paymentData[isYearlyIndex.value].trialDisplayAmount??'';
+        trialDisplayAmount.value =
+            paymentData[isYearlyIndex.value].trialDisplayAmount ?? '';
         totalCount.value = paymentData[isYearlyIndex.value].recurringCount;
         amount.value = paymentData[isYearlyIndex.value].mainAmount;
         planId.value = paymentData[isYearlyIndex.value].planId;
@@ -159,8 +160,6 @@ log("dkfjhg");
       _showApiError(null, fallback: 'Could not load plans.');
     }
   }
-
-
 
   /// The single create-subscription call. Returns its result instead of only mutating Rx
   /// state, so the Direct UPI warmer (playbook 3.3) can mint a subscription ahead of the tap
@@ -213,9 +212,9 @@ log("dkfjhg");
 
   Future<void> createSubscription(
       {required String planId,
-        required int totalCount,
-        required int trialDays,
-        required int amount}) async {
+      required int totalCount,
+      required int trialDays,
+      required int amount}) async {
     final created = await createSubscriptionRequest(
       planId: planId,
       totalCount: totalCount,
@@ -224,7 +223,6 @@ log("dkfjhg");
     );
     adoptSubscription(created);
   }
-
 
   Future<void> setupVideo(String url) async {
     if (url.isEmpty) return;
@@ -275,12 +273,7 @@ log("dkfjhg");
       String mobile = BharatStorage.getnumber() ?? '';
       String subScription = BharatStorage.getSubscriptionId() ?? '';
       final res = await api.getSubscriptionData(
-        'Bearer $token',
-        subScription,
-        mobile,
-          'com.alnico.sanatanapp'
-
-      );
+          'Bearer $token', subScription, mobile, 'com.alnico.sanatanapp');
 
       if (res.response.statusCode == 200) {
         final body = res.response.data;
@@ -306,21 +299,18 @@ log("dkfjhg");
           Fluttertoast.showToast(
               msg: "Your trial period has been started. ",
               gravity: ToastGravity.CENTER);
-          Get.offAll(()=>DashboardScreen());
+          Get.offAll(() => DashboardScreen());
           try {
-            facebookAppEvents
-                .logPurchase(amount: 99.0, currency: 'INR');
-
-
-
-          } catch (e) {}
-        }
-        else {
+            facebookAppEvents.logPurchase(amount: 99.0, currency: 'INR');
+          } catch (e) {
+            // Analytics must never block the post-payment flow.
+            debugPrint('PaymentViewModel: logPurchase failed: $e');
+          }
+        } else {
           dashCtr.isSubsribed.value = false;
           dashCtr.isSubsribed.refresh();
           BharatStorage.setSubscription(false);
         }
-
       } else if (res.response.statusCode == 401) {
         logOutUser(true);
       } else {

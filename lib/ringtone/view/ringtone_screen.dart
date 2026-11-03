@@ -15,9 +15,7 @@ import '../viewmodel/audio_ringtone_view_model.dart';
 import '../viewmodel/ringtone_view_model.dart';
 
 class RingtoneScreen extends StatefulWidget {
-  const RingtoneScreen({
-    Key? key,
-  }) : super(key: key);
+  const RingtoneScreen({super.key});
 
   @override
   State<RingtoneScreen> createState() => _RingtoneScreenState();

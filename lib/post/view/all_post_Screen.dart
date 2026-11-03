@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:posterapp/post/viewmodel/post_view_model.dart';
@@ -32,14 +31,13 @@ class AllPostsScreen extends StatelessWidget {
         itemBuilder: (context, index) {
           final post = posts[index];
 
-
           switch (post.type) {
             case 'arti':
               return Card(
                 child: Padding(
                   padding: const EdgeInsets.all(16),
                   child: Text(
-                    post.data.title ?? '',
+                    post.data.title,
                     style: const TextStyle(fontSize: 18),
                   ),
                 ),

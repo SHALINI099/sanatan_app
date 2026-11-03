@@ -1,240 +1,128 @@
-
 import 'package:get_storage/get_storage.dart';
 
-
+/// Typed facade over [GetStorage] for every value the app persists locally.
+///
+/// Keys are private so the rest of the app can only reach a value through its
+/// accessor pair, which keeps key spelling and value types in one place.
 class BharatStorage {
-  static String IdentityToken = "identification_token";
-  static String auth = "auth_token";
-  static String name = "name";
-  static String number = "mobile_number";
-  static String Avatar = "avatar";
-  static String Desc = "desc";
-  static String partyMember = 'partyMember';
-  static String date = 'date';
-  static String subId = 'subId';
+  BharatStorage._();
 
-  static String isOnboarding = "is_onboarding";
-  static String address = "address";
-  static String facebookId = "facebookId";
-  static String twitterId = "twitterId";
-  static String isSubscribed = "isSubscribed";
-  static String razorPaySubscriptionId = "razorPaySubscriptionId";
-  static String subscriptionData = "subscriptionData";
-  static String subscriptionIdPhonepe = "subscriptionId";
-  static String transactionIdPhonepe = "transactionId";
-  static String merchantSubscriptionId = "merchantSubscriptionId";
-  static String paymentType = "paymentType";
-  static String paymentAmount = "paymentAmount";
-  static String trial = 'trial';
-  static String apiKey = "apiKey";
-  static String secretKey = "secretKey";
-  static String language = "language";
+  static const String _identityToken = 'identification_token';
+  static const String _auth = 'auth_token';
+  static const String _name = 'name';
+  static const String _number = 'mobile_number';
+  static const String _avatar = 'avatar';
+  static const String _desc = 'desc';
+  static const String _date = 'date';
+  static const String _subId = 'subId';
+  static const String _isOnboarding = 'is_onboarding';
+  static const String _address = 'address';
+  static const String _facebookId = 'facebookId';
+  static const String _twitterId = 'twitterId';
+  static const String _isSubscribed = 'isSubscribed';
+  static const String _razorPaySubscriptionId = 'razorPaySubscriptionId';
+  static const String _subscriptionIdPhonepe = 'subscriptionId';
+  static const String _transactionIdPhonepe = 'transactionId';
+  static const String _merchantSubscriptionId = 'merchantSubscriptionId';
+  static const String _paymentType = 'paymentType';
+  static const String _paymentAmount = 'paymentAmount';
+  static const String _trial = 'trial';
+  static const String _apiKey = 'apiKey';
+  static const String _secretKey = 'secretKey';
+  static const String _language = 'language';
 
-  static GetStorage storage = GetStorage();
+  static final GetStorage _storage = GetStorage();
 
-  ///address
-  static setAddress(String aa) async {
-    await storage.write(address, aa);
-  }
+  static Future<void> _write(String key, Object value) =>
+      _storage.write(key, value);
 
-  static String? getAddress() {
-    return storage.read(address);
-  }
-  static setDate(String Date) async {
-    await storage.write(date, Date);
-  }
+  static T? _read<T>(String key) => _storage.read<T>(key);
 
-  static String? getDate() {
-    return storage.read(date);
-  }
-  static setApi(String api) async {
-    await storage.write(apiKey, api);
-  }
+  /// Wipes every persisted value. Used on logout.
+  static Future<void> eraseAllData() => _storage.erase();
 
-  static String? getApi() {
-    return storage.read(apiKey);
-  }
-  ///user razor Pay SubscriptionId
-  /// subscription id
-  static setSubscriptionId(String sub) async {
-    await storage.write(subId, sub);
-  }
+  // ---- Identity & session -------------------------------------------------
 
-  static String? getSubscriptionId() {
-    return storage.read(subId);
-  }
+  static Future<void> setUserInfoKey(String token) =>
+      _write(_identityToken, token);
+  static String? getUserInfoKey() => _read(_identityToken);
 
-  static setSecret(String api) async {
-    await storage.write(secretKey, api);
-  }
+  static Future<void> setAuthKey(String token) => _write(_auth, token);
+  static String? getAuthKey() => _read(_auth);
 
-  static String? getSecret() {
-    return storage.read(secretKey);
-  }
-  ///facebook
-  static setFacebookId(String facebook) async {
-    await storage.write(facebookId, facebook);
-  }
+  static Future<void> setApi(String api) => _write(_apiKey, api);
+  static String? getApi() => _read(_apiKey);
 
-  static String? getFacebookId() {
-    return storage.read(facebookId);
-  }
+  static Future<void> setSecret(String secret) => _write(_secretKey, secret);
+  static String? getSecret() => _read(_secretKey);
 
-  static setUserDesc(String desc) async {
-    await storage.write(Desc, desc);
-  }
+  static Future<void> setOnboarded(bool onboarded) =>
+      _write(_isOnboarding, onboarded);
+  static bool? getOnboarded() => _read(_isOnboarding);
 
-  static String? getUserDesc() {
-    return storage.read(Desc);
-  }
+  static Future<void> setLanguage(String code) => _write(_language, code);
+  static String? getLanguage() => _read(_language);
 
-  ///twitter
-  static setTwitterId(String twitter) async {
-    await storage.write(twitterId, twitter);
-  }
+  // ---- Profile ------------------------------------------------------------
 
-  static String? getTwitterId() {
-    return storage.read(twitterId);
-  }
+  static Future<void> setUserName(String name) => _write(_name, name);
+  static String? getUserName() => _read(_name);
 
+  static Future<void> setnumber(String mobile) => _write(_number, mobile);
+  static String? getnumber() => _read(_number);
 
+  static Future<void> setUserImage(String url) => _write(_avatar, url);
+  static String? getUserImage() => _read(_avatar);
 
-  ///identify token
-  static setUserInfoKey(String Token) async {
-    await storage.write(IdentityToken, Token);
-  }
+  static Future<void> setUserDesc(String desc) => _write(_desc, desc);
+  static String? getUserDesc() => _read(_desc);
 
-  static String? getUserInfoKey() {
-    return storage.read(IdentityToken);
-  }
+  static Future<void> setAddress(String address) => _write(_address, address);
+  static String? getAddress() => _read(_address);
 
-  ///auth token
-  static setAuthKey(String AuthToken) async {
-    await storage.write(auth, AuthToken);
-  }
+  static Future<void> setFacebookId(String id) => _write(_facebookId, id);
+  static String? getFacebookId() => _read(_facebookId);
 
-  static String? getAuthKey() {
-    return storage.read(auth);
-  }
+  static Future<void> setTwitterId(String id) => _write(_twitterId, id);
+  static String? getTwitterId() => _read(_twitterId);
 
-  ///user number
-  static setnumber(String mobNum) async {
-    await storage.write(number, mobNum);
-  }
+  static Future<void> setDate(String date) => _write(_date, date);
+  static String? getDate() => _read(_date);
 
-  static String? getnumber() {
-    return storage.read(number);
-  }
+  // ---- Subscription & payments -------------------------------------------
 
+  static Future<void> setSubscription(bool subscribed) =>
+      _write(_isSubscribed, subscribed);
+  static bool? getSubscription() => _read(_isSubscribed);
 
+  static Future<void> setTrial(bool trial) => _write(_trial, trial);
+  static bool? getTrial() => _read(_trial);
 
-  ///user razor Pay SubscriptionId
-  static setRazorPaySubscriptionId(String id) async {
-    await storage.write(razorPaySubscriptionId, id);
-  }
+  static Future<void> setSubscriptionId(String id) => _write(_subId, id);
+  static String? getSubscriptionId() => _read(_subId);
 
-  static String? getRazorPaySubscriptionId() {
-    return storage.read(razorPaySubscriptionId);
-  }
+  static Future<void> setRazorPaySubscriptionId(String id) =>
+      _write(_razorPaySubscriptionId, id);
+  static String? getRazorPaySubscriptionId() => _read(_razorPaySubscriptionId);
 
-  ///username
-  static setUserName(String Name) async {
-    await storage.write(name, Name);
-  }
+  static Future<void> setPhonePeSubscriptionId(String id) =>
+      _write(_subscriptionIdPhonepe, id);
+  static String? getPhonePeSubscriptionId() => _read(_subscriptionIdPhonepe);
 
-  static String? getUserName() {
-    return storage.read(name);
-  }
+  static Future<void> setPhonePeTransactionId(String id) =>
+      _write(_transactionIdPhonepe, id);
+  static String? getPhonePeTransactionId() => _read(_transactionIdPhonepe);
 
-  ///image
-  static setUserImage(String img) async {
-    await storage.write(Avatar, img);
-  }
+  static Future<void> setPhonePeMerchantSubscriptionId(String id) =>
+      _write(_merchantSubscriptionId, id);
+  static String? getPhonePeMerchantSubscriptionId() =>
+      _read(_merchantSubscriptionId);
 
-  static String? getUserImage() {
-    return storage.read(Avatar);
-  }
+  static Future<void> setPhonePePaymentType(String type) =>
+      _write(_paymentType, type);
+  static String? getPhonePePaymentType() => _read(_paymentType);
 
-
-  ///onboarding
-  static setOnboarded(bool onboard) async {
-    await storage.write(isOnboarding, onboard);
-  }
-
-  static bool? getOnboarded() {
-    return storage.read(isOnboarding);
-  }
-
-  static eraseAllData() async {
-    await storage.erase();
-  }
-
-  ///user razor Pay SubscriptionId
-  static setPhonePeSubscriptionId(String id) async {
-    await storage.write(subscriptionIdPhonepe, id);
-  }
-
-  static String? getPhonePeSubscriptionId() {
-    return storage.read(subscriptionIdPhonepe);
-  }
-
-  static setPhonePeTransactionId(String id) async {
-    await storage.write(transactionIdPhonepe, id);
-  }
-
-  static String? getPhonePeTransactionId() {
-    return storage.read(transactionIdPhonepe);
-  }
-
-  static setPhonePeMerchantSubscriptionId(String id) async {
-    await storage.write(merchantSubscriptionId, id);
-  }
-
-  static String? getPhonePeMerchantSubscriptionId() {
-    return storage.read(merchantSubscriptionId);
-  }
-
-  static setPhonePePaymentType(String id) async {
-    await storage.write(paymentType, id);
-  }
-
-  static String? getPhonePePaymentType() {
-    return storage.read(paymentType);
-  }
-
-  static setPhonePePaymentAmount(String id) async {
-    await storage.write(paymentAmount, id);
-  }
-
-  static String? getPhonePePaymentAmount() {
-    return storage.read(paymentAmount);
-  }
-
-  /// is Subscribed
-  static setSubscription(bool subs) async {
-    await storage.write(isSubscribed, subs);
-  }
-
-  static bool? getSubscription() {
-    return storage.read(isSubscribed);
-  }
-
-  /// is Subscribed
-
-  static setLanguage(String subs) async {
-    await storage.write(language, subs);
-  }
-
-  static String? getLanguage() {
-    return storage.read(language);
-  }
-
-
-  static setTrial(bool Trial) async {
-    await storage.write(trial, Trial);
-  }
-
-  static bool? getTrial() {
-    return storage.read(trial);
-  }
+  static Future<void> setPhonePePaymentAmount(String amount) =>
+      _write(_paymentAmount, amount);
+  static String? getPhonePePaymentAmount() => _read(_paymentAmount);
 }

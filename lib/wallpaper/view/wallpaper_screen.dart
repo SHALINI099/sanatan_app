@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart' show ScrollCacheExtent;
 import 'package:get/get.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:wallpaper_manager_plus/wallpaper_manager_plus.dart';
@@ -68,7 +69,7 @@ class WallpaperScreen extends StatelessWidget {
             return GridView.builder(
               padding: const EdgeInsets.all(16),
               itemCount: data.postData.length,
-              cacheExtent: 200,
+              scrollCacheExtent: const ScrollCacheExtent.pixels(200),
               addAutomaticKeepAlives: false,
               addRepaintBoundaries: true,
               gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
@@ -421,8 +422,7 @@ class _WallpaperTileState extends State<_WallpaperTile>
           left: 12,
           right: 12,
           child: Container(
-            padding:
-                const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
             decoration: BoxDecoration(
               color: accent.withValues(alpha: 0.92),
               borderRadius: BorderRadius.circular(10),

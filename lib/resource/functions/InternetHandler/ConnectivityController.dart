@@ -5,14 +5,17 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 
+/// Coarse connectivity state the UI cares about.
+enum MConnectivityResult { none, wifi, mobile }
+
 class ConnectivityController extends GetxController {
-  final _connectionType = MConnectivityResult.none.obs;
+  final Rx<MConnectivityResult> _connectionType = MConnectivityResult.none.obs;
   final Connectivity _connectivity = Connectivity();
-  late StreamSubscription _streamSubscription;
+  late final StreamSubscription<List<ConnectivityResult>> _streamSubscription;
 
   MConnectivityResult get connectionType => _connectionType.value;
 
-  set connectionType(value) {
+  set connectionType(MConnectivityResult value) {
     _connectionType.value = value;
   }
 
@@ -27,29 +30,20 @@ class ConnectivityController extends GetxController {
   Future<void> getConnectivityType() async {
     List<ConnectivityResult> connectivityResult;
     try {
-      connectivityResult = await (_connectivity.checkConnectivity());
+      connectivityResult = await _connectivity.checkConnectivity();
     } on PlatformException catch (e) {
       connectivityResult = [ConnectivityResult.none];
-      if (kDebugMode) {
-        print(e);
-      }
+      debugPrint('ConnectivityController: checkConnectivity failed: $e');
     }
-    return _updateState(connectivityResult);
+    _updateState(connectivityResult);
   }
 
-  _updateState(List<ConnectivityResult> result) {
+  void _updateState(List<ConnectivityResult> result) {
     if (result.contains(ConnectivityResult.mobile)) {
       connectionType = MConnectivityResult.mobile;
     } else if (result.contains(ConnectivityResult.wifi)) {
       connectionType = MConnectivityResult.wifi;
-    }
-
-    // else if (result.contains(ConnectivityResult.ethernet)) {
-    //   print('Ethernet');
-    //   connectionType = MConnectivityResult.ethernet;
-    // }
-
-    else if (result.contains(ConnectivityResult.none)) {
+    } else if (result.contains(ConnectivityResult.none)) {
       connectionType = MConnectivityResult.none;
     }
   }
@@ -57,7 +51,6 @@ class ConnectivityController extends GetxController {
   @override
   void onClose() {
     _streamSubscription.cancel();
+    super.onClose();
   }
 }
-
-enum MConnectivityResult { none, wifi, mobile }

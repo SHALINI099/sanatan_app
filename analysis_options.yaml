@@ -1,0 +1,12 @@
+include: package:flutter_lints/flutter.yaml
+
+analyzer:
+  exclude:
+    - "**/*.g.dart"
+  errors:
+    # Pre-existing naming does not follow Dart style (PascalCase files, snake_case
+    # mixed with camelCase). Renaming touches every import and is tracked as a
+    # separate clean-up; keep the rules visible without blocking the build.
+    file_names: ignore
+    non_constant_identifier_names: ignore
+    constant_identifier_names: ignore

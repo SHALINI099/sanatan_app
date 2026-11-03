@@ -1,9 +1,7 @@
-
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
-import 'package:get/get_state_manager/src/simple/get_controllers.dart';
 import 'package:posterapp/dashboard/viewmodel/dashboard_view_model.dart';
 
 import '../../core/theme/app_colors.dart';
@@ -14,7 +12,9 @@ import '../data/model/LoginModel.dart';
 import '../data/model/OnboardingModel.dart';
 import '../data/model/OtpModel.dart';
 import 'package:posterapp/core/network/dio_client.dart';
-final dashCtr=Get.put(DashboardViewModel());
+
+final dashCtr = Get.put(DashboardViewModel());
+
 class LoginViewModel extends GetxController {
   final api = LoginEndPoint(buildDio());
   final fcm_token = TextEditingController().obs;
@@ -34,10 +34,6 @@ class LoginViewModel extends GetxController {
   final rxOnboardRequestStatus = Status.initial.obs;
 
   RxBool isAccepted = true.obs;
-
-
-
-
 
   void setLoginRxRequestStatus(Status value) =>
       rxLoginRequestStatus.value = value;
@@ -80,7 +76,7 @@ class LoginViewModel extends GetxController {
         setLoginRxRequestStatus(Status.completed);
       } else {
         loginApiError.value =
-        "${res.response.statusCode}\n${res.response.statusMessage}";
+            "${res.response.statusCode}\n${res.response.statusMessage}";
         setLoginRxRequestStatus(Status.error);
       }
     } catch (e) {
@@ -137,7 +133,7 @@ class LoginViewModel extends GetxController {
         ).then((value) => setOtpRxRequestStatus(Status.initial));
       } else {
         otpApiError.value =
-        "${res.response.statusCode.toString()}\n${res.response.statusMessage}";
+            "${res.response.statusCode.toString()}\n${res.response.statusMessage}";
         otpApiError.refresh();
         setOtpRxRequestStatus(Status.error);
       }
@@ -147,7 +143,6 @@ class LoginViewModel extends GetxController {
       setOtpRxRequestStatus(Status.error);
     }
   }
-
 
   // -------------------------------
   // ONBOARDING
@@ -160,9 +155,7 @@ class LoginViewModel extends GetxController {
 
       final res = await api.onboardUser(
         'Bearer $token',
-        {
-          'name': nameCtr.value.text,
-          "avatar":'sss'},
+        {'name': nameCtr.value.text, "avatar": 'sss'},
       );
 
       if (res.response.statusCode == 200) {
@@ -170,18 +163,16 @@ class LoginViewModel extends GetxController {
 
         await BharatStorage.setUserName(nameCtr.value.text);
         // await BharatStorage.setUserImage(avatar);
-        await BharatStorage.setOnboarded(
-            onboardingModel?.onboarding ?? false);
+        await BharatStorage.setOnboarded(onboardingModel?.onboarding ?? false);
 
         rxOnboardRequestStatus.value = Status.completed;
       } else {
         onboardApiError.value =
-        "${res.response.statusCode}\n${res.response.statusMessage}";
+            "${res.response.statusCode}\n${res.response.statusMessage}";
         rxOnboardRequestStatus.value = Status.error;
       }
     } catch (e) {
       _handleError(onboardApiError, e, rxOnboardRequestStatus);
-
     }
   }
 

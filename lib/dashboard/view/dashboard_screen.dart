@@ -1,5 +1,4 @@
 import 'dart:io';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:get/get.dart';
@@ -69,9 +68,9 @@ class _DashboardScreenState extends State<DashboardScreen>
     _scrollCtrl.addListener(() {
       _showTopButton.value = _scrollCtrl.offset > 300;
     });
-    WidgetsBinding.instance.addPostFrameCallback((_)  {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
       profileCtr.userData();
-     postCtrl.getAllPost();
+      postCtrl.getAllPost();
       if (!(BharatStorage.getSubscription() ?? false)) {
         Get.to(() => PaymentScreen());
       }
@@ -156,68 +155,61 @@ class _DashboardScreenState extends State<DashboardScreen>
                                 "Hey $displayName ✨",
                                 style: TextStyle(
                                     fontSize: AppDimensions.fontSize18,
-                                    fontWeight:
-                                        AppDimensions.fontWeight600),
+                                    fontWeight: AppDimensions.fontWeight600),
                                 overflow: TextOverflow.ellipsis,
                               );
                             }),
                           ),
                           Obx(() => _showTopButton.value
                               ? InkWell(
-                            onTap: _scrollToTop,
-                            borderRadius: BorderRadius.circular(30),
-
-                            child: Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 18,
-                                vertical: 8,
-                              ),
-
-                              decoration: BoxDecoration(
-                                gradient: LinearGradient(
-                                  colors: [
-                                    AppColors.primaryColor,
-                                    AppColors.primaryColor.withValues(alpha: 0.8),
-                                  ],
-                                ),
-
-                                borderRadius: BorderRadius.circular(30),
-
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: AppColors.primaryColor.withValues(alpha: 0.3),
-                                    blurRadius: 8,
-                                    offset: const Offset(0, 4),
-                                  ),
-                                ],
-                              ),
-
-                              child: Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-
-                                  const Icon(
-                                    Icons.keyboard_arrow_up_rounded,
-                                    color: Colors.white,
-                                    size: 20,
-                                  ),
-
-                                  const SizedBox(width: 4),
-
-                                  Text(
-                                    "Top",
-                                    textAlign: TextAlign.center,
-
-                                    style: AppDimensions.inter(
-                                      fontWeight: AppDimensions.fontWeight600,
-                                      fontSize: 14,
-                                      color: AppColors.white,
+                                  onTap: _scrollToTop,
+                                  borderRadius: BorderRadius.circular(30),
+                                  child: Container(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 18,
+                                      vertical: 8,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      gradient: LinearGradient(
+                                        colors: [
+                                          AppColors.primaryColor,
+                                          AppColors.primaryColor
+                                              .withValues(alpha: 0.8),
+                                        ],
+                                      ),
+                                      borderRadius: BorderRadius.circular(30),
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color: AppColors.primaryColor
+                                              .withValues(alpha: 0.3),
+                                          blurRadius: 8,
+                                          offset: const Offset(0, 4),
+                                        ),
+                                      ],
+                                    ),
+                                    child: Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        const Icon(
+                                          Icons.keyboard_arrow_up_rounded,
+                                          color: Colors.white,
+                                          size: 20,
+                                        ),
+                                        const SizedBox(width: 4),
+                                        Text(
+                                          "Top",
+                                          textAlign: TextAlign.center,
+                                          style: AppDimensions.inter(
+                                            fontWeight:
+                                                AppDimensions.fontWeight600,
+                                            fontSize: 14,
+                                            color: AppColors.white,
+                                          ),
+                                        ),
+                                      ],
                                     ),
                                   ),
-                                ],
-                              ),
-                            ),
-                          )
+                                )
                               : const SizedBox.shrink()),
                           IconButton(
                               onPressed: () {
@@ -312,8 +304,10 @@ class _DashboardScreenState extends State<DashboardScreen>
                               final items = <_DashCard>[
                                 _DashCard("⏰", "Alarm", () => AlarmScreen()),
                                 _DashCard("📿", "Mantra", () => MantraScreen()),
-                                _DashCard("🖼️", "Wallpaper", () => WallpaperScreen()),
-                                _DashCard("🎵", "Ringtone", () => RingtoneScreen()),
+                                _DashCard("🖼️", "Wallpaper",
+                                    () => WallpaperScreen()),
+                                _DashCard(
+                                    "🎵", "Ringtone", () => RingtoneScreen()),
                               ];
                               return Column(
                                 children: [
@@ -327,9 +321,11 @@ class _DashboardScreenState extends State<DashboardScreen>
                                             child: buildCard(
                                               items[r + c].emoji,
                                               items[r + c].title,
-                                              dashCtr.selectedCardIndex.value == r + c,
+                                              dashCtr.selectedCardIndex.value ==
+                                                  r + c,
                                               () {
-                                                dashCtr.selectedCardIndex.value = r + c;
+                                                dashCtr.selectedCardIndex
+                                                    .value = r + c;
                                                 Get.to(items[r + c].screen);
                                               },
                                             ),
@@ -493,12 +489,10 @@ class _DashboardScreenState extends State<DashboardScreen>
       ),
     );
   }
-
-
 }
 
 void showRatingPopup(BuildContext context) async {
-  final InAppReview _inAppReview = InAppReview.instance;
+  final InAppReview inAppReview = InAppReview.instance;
 
   showDialog(
     context: context,
@@ -538,22 +532,20 @@ void showRatingPopup(BuildContext context) async {
                 },
               ),
               AppSpacing.width(10),
-
               DynamicButton(
                 text: "Ok",
                 height: 40,
                 color: AppColors.white,
                 onTap: () async {
-                  if (dashCtr.stars.value > 3.0) {
-                    if (await _inAppReview.isAvailable()) {
-                  Future.delayed(const Duration(seconds: 2), () {
-                  _inAppReview.requestReview();
-                  // _inAppReview.openStoreListing();
-                  });
-                  } else {}
-                  Navigator.pop(context); // Close the dialog
-                  } else {
-                  Navigator.pop(context);
+                  // Close the dialog first so no BuildContext is used after
+                  // the async availability check.
+                  Get.back();
+                  if (dashCtr.stars.value <= 3.0) return;
+                  if (await inAppReview.isAvailable()) {
+                    Future.delayed(
+                      const Duration(seconds: 2),
+                      inAppReview.requestReview,
+                    );
                   }
                 },
               ),
@@ -566,10 +558,6 @@ void showRatingPopup(BuildContext context) async {
   //   },
   // );
 }
-
-
-
-
 
 class _DashCard {
   final String emoji;

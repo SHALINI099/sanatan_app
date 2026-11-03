@@ -26,7 +26,7 @@ class _PostScreenState extends State<PostScreen> {
 
   final Map<int, GlobalKey> _keys = {};
 
-  int _currentIndex = 0;
+  final int _currentIndex = 0;
 
   @override
   void initState() {
@@ -79,7 +79,6 @@ class _PostScreenState extends State<PostScreen> {
         //   ),
         // ],
       ),
-
       body: Obx(() {
         if (postCtrl.postModel.value == null) {
           return const Center(
@@ -93,38 +92,27 @@ class _PostScreenState extends State<PostScreen> {
           controller: _pageCtrl,
           itemCount: posts.length,
           scrollDirection: Axis.vertical,
-
-
-
           itemBuilder: (context, index) {
             final card = posts[index];
 
             return Padding(
               padding: const EdgeInsets.all(12),
-
               child: Column(
                 children: [
                   RepaintBoundary(
                     key: _keyFor(index),
-
                     child: Card(
                       color: AppColors.primaryColor,
-
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),
                       ),
-
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
-
                         children: [
-
                           /// IMAGE
                           CachedNetworkImage(
-                            imageUrl: card.postUrl ?? '',
-
+                            imageUrl: card.postUrl,
                             fit: BoxFit.cover,
-
                             placeholder: (context, url) {
                               return SizedBox(
                                 height: 300,
@@ -135,7 +123,6 @@ class _PostScreenState extends State<PostScreen> {
                                 ),
                               );
                             },
-
                             errorWidget: (context, url, error) {
                               return const SizedBox(
                                 height: 300,
@@ -159,27 +146,29 @@ class _PostScreenState extends State<PostScreen> {
                                   ClipOval(
                                     child: avatar.isEmpty
                                         ? Container(
-                                      width: 65,
-                                      height: 65,
-                                      color: Colors.white,
-                                      alignment: Alignment.center,
-                                      child: const Icon(Icons.person,
-                                          color: AppColors.primaryColor),
-                                    )
+                                            width: 65,
+                                            height: 65,
+                                            color: Colors.white,
+                                            alignment: Alignment.center,
+                                            child: const Icon(Icons.person,
+                                                color: AppColors.primaryColor),
+                                          )
                                         : CachedNetworkImage(
-                                      imageUrl: avatar,
-                                      width: 65,
-                                      height: 65,
-                                      fit: BoxFit.cover,
-                                      errorWidget: (_, __, ___) => Container(
-                                        width: 44,
-                                        height: 44,
-                                        color: Colors.white,
-                                        alignment: Alignment.center,
-                                        child: const Icon(Icons.person,
-                                            color: AppColors.primaryColor),
-                                      ),
-                                    ),
+                                            imageUrl: avatar,
+                                            width: 65,
+                                            height: 65,
+                                            fit: BoxFit.cover,
+                                            errorWidget: (_, __, ___) =>
+                                                Container(
+                                              width: 44,
+                                              height: 44,
+                                              color: Colors.white,
+                                              alignment: Alignment.center,
+                                              child: const Icon(Icons.person,
+                                                  color:
+                                                      AppColors.primaryColor),
+                                            ),
+                                          ),
                                   ),
                                   const SizedBox(width: 10),
                                   Expanded(
@@ -214,11 +203,11 @@ class _PostScreenState extends State<PostScreen> {
                     onTap: () {
                       if (BharatStorage.getSubscription() == true) {
                         final post =
-                           postCtrl.postModel.value!.postData[_currentIndex];
+                            postCtrl.postModel.value!.postData[_currentIndex];
                         DownloadShare.sharePost(
-                                  _keyFor(_currentIndex),
-                                  post.sharingContent ?? '',
-                                );
+                          _keyFor(_currentIndex),
+                          post.sharingContent,
+                        );
                       } else {
                         Get.to(() => PaymentScreen());
                       }

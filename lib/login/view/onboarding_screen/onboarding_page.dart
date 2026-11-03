@@ -53,9 +53,10 @@ class _OnboardingPageState extends State<OnboardingPage> {
                 fillColor: const Color(0xFFF4F5F8),
                 controller: loginCtr.nameCtr.value,
                 validator: (value) {
-                  if (value!.isEmpty) {
+                  if (value == null || value.isEmpty) {
                     return "Enter Name";
                   }
+                  return null;
                 },
                 isGreyBorder: true,
               ).paddingSymmetric(
@@ -73,14 +74,11 @@ class _OnboardingPageState extends State<OnboardingPage> {
                       radius: true,
                       backgroundColor: AppColors.primaryColor,
                       onTap: () {
-
                         if (formKey.currentState!.validate() &&
                             loginCtr.nameCtr.value.text.isNotEmpty) {
-
-
                           loginCtr.verifyUser();
                           Future.delayed(const Duration(milliseconds: 100));
-                        }  else {
+                        } else {
                           Fluttertoast.showToast(
                               msg: "Enter Name here",
                               backgroundColor: AppColors.primaryColor,
@@ -96,7 +94,6 @@ class _OnboardingPageState extends State<OnboardingPage> {
                   case Status.completed:
                     SchedulerBinding.instance.addPostFrameCallback((_) {
                       if (loginCtr.onboardingModel!.onboarding == true) {
-
                         Get.offAll(() => const DashboardScreen());
                       } else {
                         Get.offAll(() => const OnboardingPage());
@@ -105,14 +102,16 @@ class _OnboardingPageState extends State<OnboardingPage> {
                     break;
                   case Status.error:
                     EasyLoading.showError(loginCtr.onboardApiError.value).then(
-                        (value) =>
-                        loginCtr.rxLoginRequestStatus.value = Status.loading);
+                        (value) => loginCtr.rxLoginRequestStatus.value =
+                            Status.loading);
                     break;
                 }
                 return const SizedBox();
               },
             ),
-            AppSpacing.height(30,)
+            AppSpacing.height(
+              30,
+            )
           ],
         ),
       ),

@@ -16,9 +16,7 @@ import '../../core/database/BharatStorage.dart';
 import '../../ringtone/viewmodel/audio_ringtone_view_model.dart';
 
 class AlarmScreen extends StatefulWidget {
-  const AlarmScreen({
-    Key? key,
-  }) : super(key: key);
+  const AlarmScreen({super.key});
 
   @override
   State<AlarmScreen> createState() => _AlarmScreenState();
@@ -51,10 +49,10 @@ class _AlarmScreenState extends State<AlarmScreen> {
 
   @override
   Widget build(BuildContext context) {
-    if(BharatStorage.getSubscription()==true){
-      dashCtr.isSubsribed.value=true;
-    }else{
-      dashCtr.isSubsribed.value=false;
+    if (BharatStorage.getSubscription() == true) {
+      dashCtr.isSubsribed.value = true;
+    } else {
+      dashCtr.isSubsribed.value = false;
     }
     return Scaffold(
       backgroundColor: AppColors.bgColor,
@@ -168,7 +166,10 @@ class _AlarmScreenState extends State<AlarmScreen> {
                                 post.thumbnail,
                                 fit: BoxFit.cover,
                                 errorBuilder: (context, error, stackTrace) {
-                                  return Icon(Icons.music_note_outlined,size: 30,);
+                                  return Icon(
+                                    Icons.music_note_outlined,
+                                    size: 30,
+                                  );
                                 },
                               ),
                             ),
@@ -240,8 +241,10 @@ class _AlarmScreenState extends State<AlarmScreen> {
                       /// EXPANDED CONTROLS
                       if (isExpanded)
                         Obx(() {
-                          final duration = audioCtr.duration.value.inSeconds.toDouble();
-                          final position = audioCtr.position.value.inSeconds.toDouble();
+                          final duration =
+                              audioCtr.duration.value.inSeconds.toDouble();
+                          final position =
+                              audioCtr.position.value.inSeconds.toDouble();
 
                           return Column(
                             children: [
@@ -251,7 +254,8 @@ class _AlarmScreenState extends State<AlarmScreen> {
                               SliderTheme(
                                 data: SliderTheme.of(context).copyWith(
                                   activeTrackColor: _accent,
-                                  inactiveTrackColor: _accent.withValues(alpha: 0.25),
+                                  inactiveTrackColor:
+                                      _accent.withValues(alpha: 0.25),
                                   thumbColor: _accent,
                                   overlayColor: _accent.withValues(alpha: 0.2),
                                   trackHeight: 3,
@@ -268,22 +272,28 @@ class _AlarmScreenState extends State<AlarmScreen> {
 
                               /// TIME DISPLAY
                               Padding(
-                                padding: const EdgeInsets.symmetric(horizontal: 6),
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 6),
                                 child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
                                   children: [
                                     Text(
-                                      audioCtr.formatTime(audioCtr.position.value),
+                                      audioCtr
+                                          .formatTime(audioCtr.position.value),
                                       style: TextStyle(
                                         fontSize: 12,
-                                        color: Colors.black.withValues(alpha: 0.65),
+                                        color: Colors.black
+                                            .withValues(alpha: 0.65),
                                       ),
                                     ),
                                     Text(
-                                      audioCtr.formatTime(audioCtr.duration.value),
+                                      audioCtr
+                                          .formatTime(audioCtr.duration.value),
                                       style: TextStyle(
                                         fontSize: 12,
-                                        color: Colors.black.withValues(alpha: 0.65),
+                                        color: Colors.black
+                                            .withValues(alpha: 0.65),
                                       ),
                                     ),
                                   ],
@@ -297,9 +307,11 @@ class _AlarmScreenState extends State<AlarmScreen> {
                                 width: double.infinity,
                                 child: ElevatedButton.icon(
                                   onPressed: () async {
-                                    if (BharatStorage.getSubscription() == true) {
-                                      final ok =
-                                      await setToneAccurate(audioUrl: post.alarmUrl, type: 'alarm');
+                                    if (BharatStorage.getSubscription() ==
+                                        true) {
+                                      final ok = await setToneAccurate(
+                                          audioUrl: post.alarmUrl,
+                                          type: 'alarm');
                                       if (ok) {
                                         audioCtr.stopAudio();
                                         Fluttertoast.showToast(
@@ -316,7 +328,8 @@ class _AlarmScreenState extends State<AlarmScreen> {
                                       Get.to(() => PaymentScreen());
                                     }
                                   },
-                                  icon: const Icon(Icons.alarm_rounded, size: 18),
+                                  icon:
+                                      const Icon(Icons.alarm_rounded, size: 18),
                                   label: const Text(
                                     "Set as Alarm",
                                     style: TextStyle(
@@ -329,7 +342,8 @@ class _AlarmScreenState extends State<AlarmScreen> {
                                     foregroundColor: Colors.white,
                                     elevation: 2,
                                     shadowColor: _accent.withValues(alpha: 0.5),
-                                    padding: const EdgeInsets.symmetric(vertical: 14),
+                                    padding: const EdgeInsets.symmetric(
+                                        vertical: 14),
                                     shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(14),
                                     ),
@@ -350,7 +364,6 @@ class _AlarmScreenState extends State<AlarmScreen> {
     );
   }
 
-
   Future<bool> setToneAccurate({
     required String audioUrl,
     required String type,
@@ -367,8 +380,6 @@ class _AlarmScreenState extends State<AlarmScreen> {
         case "alarm":
           success = await RingtoneSet.setAlarmFromNetwork(audioUrl);
           break;
-
-
       }
     } catch (e) {
       success = false;
@@ -396,7 +407,6 @@ class _AlarmScreenState extends State<AlarmScreen> {
             case "alarm":
               success = await RingtoneSet.setAlarmFromFile(file);
               break;
-
           }
         }
       } catch (e) {
@@ -414,20 +424,9 @@ class _AlarmScreenState extends State<AlarmScreen> {
     required String audioUrl,
     required String type, // ringtone | alarm | message
   }) async {
-    final AudioRingtoneViewModel audioVM = Get.find();
-
-     await setToneAccurate(
+    await setToneAccurate(
       audioUrl: audioUrl,
       type: type,
     );
-
-
-
-
   }
-
-
-
-
 }
-

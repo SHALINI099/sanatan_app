@@ -9,28 +9,31 @@ import '../../core/theme/app_colors.dart';
 import '../../dashboard/view/dashboard_screen.dart';
 import '../../dashboard/viewmodel/dashboard_view_model.dart';
 import '../../login/view/login_screen/login_screen.dart';
-import '../../login/view/onboarding_screen/onboarding_page.dart';
 import '../../myProfile/viewmodel/my_profile_view_model.dart';
 
 class SplashScreen extends StatefulWidget {
-  const SplashScreen({
-    super.key,
-  });
+  const SplashScreen({super.key});
 
   @override
-
-
-   _SplashScreenState createState() => _SplashScreenState();
+  State<SplashScreen> createState() => _SplashScreenState();
 }
 
 class _SplashScreenState extends State<SplashScreen> {
-  MyProfileViewModel profileCtr = Get.put(MyProfileViewModel());
+  /// Minimum time the logo stays on screen before routing.
+  static const Duration _splashHold = Duration(seconds: 1);
+
+  static const String _defaultLanguage = 'en';
+
+  /// Registered here so later `Get.find<MyProfileViewModel>()` calls resolve.
+  final MyProfileViewModel profileCtr = Get.put(MyProfileViewModel());
 
   @override
   void initState() {
-    Get.updateLocale(Locale(BharatStorage.getLanguage() ?? 'en', ''));
-    BharatStorage.setLanguage('en' ?? 'hi');
     super.initState();
+    Get.updateLocale(
+      Locale(BharatStorage.getLanguage() ?? _defaultLanguage, ''),
+    );
+    BharatStorage.setLanguage(_defaultLanguage);
     _loadData();
   }
 
@@ -51,63 +54,54 @@ class _SplashScreenState extends State<SplashScreen> {
         sound: true,
       );
       await messaging.subscribeToTopic('all');
-    } catch (e) {}
+    } catch (error) {
+      // Push is optional; a denied permission or offline device must not
+      // affect start-up.
+      debugPrint('SplashScreen: messaging setup failed: $error');
+    }
   }
 
   Future<void> _loadData() async {
     FirebaseAnalytics.instance.setAnalyticsCollectionEnabled(true);
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _setupMessaging();
-    });
+    WidgetsBinding.instance.addPostFrameCallback((_) => _setupMessaging());
 
     final DashboardViewModel dashCtr = Get.put(DashboardViewModel());
 
-    await Future.delayed(const Duration(seconds: 0));
     try {
-      String? authToken = BharatStorage.getAuthKey();
+      final String? authToken = BharatStorage.getAuthKey();
+      final bool isOnboarded = BharatStorage.getOnboarded() ?? false;
+      final String? language = BharatStorage.getLanguage();
 
-      bool? isOnboarded = BharatStorage.getOnboarded();
-      String? language = BharatStorage.getLanguage();
-      if (language.isNull || language!.isEmpty) {
-        BharatStorage.setLanguage('en');
+      if (language == null || language.isEmpty) {
+        BharatStorage.setLanguage(_defaultLanguage);
       }
 
-      if (authToken != null &&
-          authToken.isNotEmpty &&
-          isOnboarded != null &&
-          isOnboarded == true) {
-        if (BharatStorage.getSubscription() == true) {
-          dashCtr.isSubsribed.value = true;
-        } else {
-          dashCtr.isSubsribed.value = false;
-        }
-        await Future.delayed(const Duration(seconds: 1))
-            .then((value) => Get.off(() => const DashboardScreen()));
-      } else if (authToken != null &&
-          authToken.isNotEmpty &&
-          isOnboarded == null &&
-          isOnboarded == false) {
-        await Future.delayed(const Duration(seconds: 1))
-            .then((value) => Get.off(() => const OnboardingPage()));
-      } else {
-        if (isOnboarded == true) {
-          await Future.delayed(const Duration(seconds: 1))
-              .then((value) => Get.off(() => const DashboardScreen()));
-        } else {
-          await Future.delayed(const Duration(seconds: 1))
-              .then((value) => Get.off(() => const LoginScreen()));
-        }
+      final bool hasSession = authToken != null && authToken.isNotEmpty;
+      if (hasSession && isOnboarded) {
+        dashCtr.isSubsribed.value = BharatStorage.getSubscription() == true;
       }
-    } catch (error) {}
+
+      await Future.delayed(_splashHold);
+      if (!mounted) return;
+
+      Get.off(
+        () => isOnboarded ? const DashboardScreen() : const LoginScreen(),
+      );
+    } catch (error) {
+      // Storage reads are synchronous and local; a failure here means a
+      // corrupt store. Fall through to the login screen rather than hang.
+      debugPrint('SplashScreen: failed to resolve start route: $error');
+      Get.off(() => const LoginScreen());
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        backgroundColor: AppColors.bgColor,
+      backgroundColor: AppColors.bgColor,
       body: Center(
-        child: Image.asset(AppImages.appLogo,height: 90,)
-      )
+        child: Image.asset(AppImages.appLogo, height: 90),
+      ),
     );
   }
 }

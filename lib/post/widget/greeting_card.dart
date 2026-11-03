@@ -86,11 +86,7 @@ class _GreetingCardState extends State<GreetingCard> {
 
   @override
   Widget build(BuildContext context) {
-    try{
-      profileCtr.nameCtr.value.text = BharatStorage.getUserName() ?? '';
-    }catch(e){
-
-    }
+    profileCtr.nameCtr.value.text = BharatStorage.getUserName() ?? '';
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -182,7 +178,6 @@ class _GreetingCardState extends State<GreetingCard> {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-
           const SizedBox(height: 14),
           _buildCapturable(),
           if (widget.showActions) ...[
@@ -248,7 +243,6 @@ class _GreetingCardState extends State<GreetingCard> {
   }
 
   Widget _buildAvatarStrip() {
-
     return Obx(() {
       final avatar = profileCtr.avatar.value;
       return Container(
@@ -262,8 +256,7 @@ class _GreetingCardState extends State<GreetingCard> {
             ],
           ),
         ),
-        padding:
-            const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
         child: Row(
           children: [
             Container(
@@ -325,7 +318,6 @@ class _GreetingCardState extends State<GreetingCard> {
                       letterSpacing: 0.3,
                     ),
                   ),
-
                 ],
               ),
             ),
@@ -344,8 +336,7 @@ class _GreetingCardState extends State<GreetingCard> {
             child: ElevatedButton.icon(
               onPressed: () {
                 if (BharatStorage.getSubscription() == true) {
-                  DownloadShare.sharePost(
-                      _boundaryKey, widget.sharingContent);
+                  DownloadShare.sharePost(_boundaryKey, widget.sharingContent);
                 } else {
                   Get.to(() => const PaymentScreen());
                 }
@@ -370,5 +361,4 @@ class _GreetingCardState extends State<GreetingCard> {
       ],
     );
   }
-
 }

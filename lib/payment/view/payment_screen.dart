@@ -46,7 +46,6 @@ class _PaymentScreenState extends State<PaymentScreen>
   bool _otherSelected = false;
 
   bool _isProcessing = false;
-  String _statusLabel = '';
 
   bool _upiHandoffInFlight = false;
   String? _pendingSubscriptionId;
@@ -228,7 +227,6 @@ class _PaymentScreenState extends State<PaymentScreen>
       // Explicit re-check. Never auto-grants; it just asks the server again.
       setState(() {
         _offerRefresh = false;
-        _statusLabel = UpiConfig.confirmingLabel;
       });
       await _pollForConfirmation();
       return;
@@ -266,10 +264,8 @@ class _PaymentScreenState extends State<PaymentScreen>
   }
 
   Future<void> _payDirectUpi(String packageName) async {
-    final app = _upiApps.where((a) => a.packageName == packageName).firstOrNull;
     setState(() {
       _isProcessing = true;
-      _statusLabel = UpiConfig.openingLabelFor(app?.appName ?? 'UPI app');
       _upiHandoffInFlight = true;
       _offerRefresh = false;
     });
@@ -298,7 +294,6 @@ class _PaymentScreenState extends State<PaymentScreen>
       _unlocked = true;
       setState(() {
         _isProcessing = false;
-        _statusLabel = '';
       });
       // Existing confirmation surface — it polls the server for the real verdict. A client
       // "success" carries no authority on its own.
@@ -317,7 +312,6 @@ class _PaymentScreenState extends State<PaymentScreen>
       // instantly once this resolves.
       final pending = _pendingSubscriptionId;
       if (pending != null && pending.isNotEmpty && !_unlocked && !_confirming) {
-        setState(() => _statusLabel = UpiConfig.confirmingLabel);
         // Releases the guards and settles the terminal state itself.
         await _pollForConfirmation(afterCancel: true);
         return;
@@ -326,7 +320,6 @@ class _PaymentScreenState extends State<PaymentScreen>
       _upiHandoffInFlight = false;
       setState(() {
         _isProcessing = false;
-        _statusLabel = '';
       });
       return;
     }
@@ -335,7 +328,6 @@ class _PaymentScreenState extends State<PaymentScreen>
     _upiHandoffInFlight = false;
     setState(() {
       _isProcessing = false;
-      _statusLabel = '';
     });
     Fluttertoast.showToast(
         msg: res.error ?? UpiConfig.errorLaunchFailed,
@@ -347,7 +339,6 @@ class _PaymentScreenState extends State<PaymentScreen>
   Future<void> _payWithSheet() async {
     setState(() {
       _isProcessing = true;
-      _statusLabel = UpiConfig.waitLabel;
     });
 
     try {
@@ -362,7 +353,6 @@ class _PaymentScreenState extends State<PaymentScreen>
         if (!mounted) return;
         setState(() {
           _isProcessing = false;
-          _statusLabel = '';
         });
         Fluttertoast.showToast(
             msg: created.error ?? "Subscription ID not available",
@@ -376,7 +366,6 @@ class _PaymentScreenState extends State<PaymentScreen>
 
       setState(() {
         _isProcessing = false;
-        _statusLabel = '';
       });
 
       razorPayViewModel.openCheckout(
@@ -388,7 +377,6 @@ class _PaymentScreenState extends State<PaymentScreen>
       if (!mounted) return;
       setState(() {
         _isProcessing = false;
-        _statusLabel = '';
       });
       Fluttertoast.showToast(
           msg: "Error creating subscription", gravity: ToastGravity.TOP);
@@ -406,8 +394,9 @@ class _PaymentScreenState extends State<PaymentScreen>
     // is worse for the user than a spurious error (D15).
     await Future.delayed(Duration(milliseconds: UpiConfig.strandedGraceMs));
     if (!mounted) return;
-    if (!_upiHandoffInFlight || _unlocked || _confirming)
+    if (!_upiHandoffInFlight || _unlocked || _confirming) {
       return; // a real result arrived
+    }
 
     if (_pendingSubscriptionId == null || _pendingSubscriptionId!.isEmpty) {
       // Never got as far as a subscription — nothing to confirm, just release the guard.
@@ -415,7 +404,6 @@ class _PaymentScreenState extends State<PaymentScreen>
       _upiHandoffInFlight = false;
       setState(() {
         _isProcessing = false;
-        _statusLabel = '';
       });
       return;
     }
@@ -432,7 +420,6 @@ class _PaymentScreenState extends State<PaymentScreen>
     UpiDirectService.releaseStrandedAttempt();
     setState(() {
       _isProcessing = false;
-      _statusLabel = '';
     });
     Get.to(() => const VerifyPaymentPage());
   }
@@ -486,8 +473,6 @@ class _PaymentScreenState extends State<PaymentScreen>
     setState(() {
       _isProcessing = false;
       _offerRefresh = true;
-      _statusLabel =
-          afterCancel ? UpiConfig.errorCancelled : UpiConfig.pendingLabel;
     });
   }
 
@@ -660,8 +645,8 @@ class _PaymentScreenState extends State<PaymentScreen>
                                                             AppSpacing.height(
                                                                 8),
                                                             Text(
-                                                                payment.discount ??
-                                                                    '',
+                                                                payment
+                                                                    .discount,
                                                                 style: AppDimensions.inter(
                                                                     fontSize:
                                                                         18,
@@ -971,7 +956,7 @@ class _PaymentScreenState extends State<PaymentScreen>
                     isLoading: _isProcessing || _confirming,
                     text: "Continue",
                     backgroundColor: AppColors.primaryColor,
-                    FontWeight: AppDimensions.fontWeight700,
+                    fontWeight: AppDimensions.fontWeight700,
                     fontSize: AppDimensions.fontSize20,
                   ),
                   AppSpacing.height(10),

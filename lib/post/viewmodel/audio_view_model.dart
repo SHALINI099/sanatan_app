@@ -172,6 +172,7 @@ class AudioViewModel extends GetxController with WidgetsBindingObserver {
 
       isPlaying.value = true;
     } catch (e) {
+      debugPrint('AudioViewModel.playAudio: $e');
     } finally {
       loading.value = false;
       _busy = false;
@@ -194,6 +195,7 @@ class AudioViewModel extends GetxController with WidgetsBindingObserver {
       /// a deliberate pause outranks a pending lifecycle resume
       _resumeOnForeground = false;
     } catch (e) {
+      debugPrint('AudioViewModel.pauseAudio: $e');
     } finally {
       _busy = false;
     }
@@ -219,6 +221,7 @@ class AudioViewModel extends GetxController with WidgetsBindingObserver {
 
       _resumeOnForeground = false;
     } catch (e) {
+      debugPrint('AudioViewModel.stopAudio: $e');
     } finally {
       _busy = false;
     }
@@ -231,6 +234,7 @@ class AudioViewModel extends GetxController with WidgetsBindingObserver {
         Duration(seconds: value.toInt()),
       );
     } catch (e) {
+      debugPrint('AudioViewModel.seek: $e');
     }
   }
 

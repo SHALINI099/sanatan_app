@@ -1,19 +1,16 @@
-
-
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:posterapp/app/app_globals.dart';
+import 'package:posterapp/core/database/BharatStorage.dart';
+import 'package:posterapp/core/network/dio_client.dart';
 import 'package:posterapp/dashboard/data/api/DashboardApi.dart';
 import 'package:posterapp/dashboard/data/model/CardModel.dart';
 import 'package:posterapp/dashboard/data/model/LanguageModel.dart';
 import 'package:posterapp/dashboard/data/model/TagListModel.dart';
 import 'package:posterapp/payment/data/api/PaymentApi.dart';
-
-import '../../main.dart';
-import '../../core/database/BharatStorage.dart';
-import '../../resource/functions/LogOut.dart';
-import '../../resource/values/DownloadShare.dart';
-import '../../resource/values/Status.dart';
-import 'package:posterapp/core/network/dio_client.dart';
+import 'package:posterapp/resource/functions/LogOut.dart';
+import 'package:posterapp/resource/values/DownloadShare.dart';
+import 'package:posterapp/resource/values/Status.dart';
 
 class DashboardViewModel extends GetxController {
   final api = DashboardApi(buildDio());
@@ -32,7 +29,6 @@ class DashboardViewModel extends GetxController {
   final PageController bdaycontroller = PageController();
   final PageController politicalcontroller = PageController();
   final PageController framecontroller = PageController();
-
 
   RxList<PostDatum> cards = <PostDatum>[].obs;
   RxList<Datums> laguageList = <Datums>[].obs;
@@ -126,7 +122,6 @@ class DashboardViewModel extends GetxController {
               model.tagName[dashCtr.selectedIndex.value].id.toString();
 
           fetchCards(dashCtr.tagId.value, '0');
-
         }
 
         setTagRxRequestStatus(Status.completed);
@@ -151,35 +146,29 @@ class DashboardViewModel extends GetxController {
 
     try {
       final token = BharatStorage.getAuthKey() ?? '';
-      final appLocale = BharatStorage.getLanguage() ?? 'en';
+      final locale = BharatStorage.getLanguage() ?? 'en';
 
       final response =
-      await api.getCardData(id, partyId, 'Bearer $token', appLocale);
+          await api.getCardData(id, partyId, 'Bearer $token', locale);
 
-      final statusCode = response.response?.statusCode;
-
+      final statusCode = response.response.statusCode;
 
       if (statusCode == 200) {
         final model = CardModel.fromJson(response.data);
-        cards.assignAll(model.postData ?? []);
+        cards.assignAll(model.postData);
         setCardRxRequestStatus(Status.completed);
-      }
-      else if (statusCode == 401) {
+      } else if (statusCode == 401) {
         logOutUser(false);
-      }
-      else {
-
+      } else {
         handleError(
           statusCode?.toString() ?? "Unknown",
-          response.response?.statusMessage ?? "Something went wrong",
+          response.response.statusMessage ?? "Something went wrong",
         );
       }
     } catch (e) {
       handleError("Exception", e.toString());
     }
   }
-
-
 
 //--------------API CALLS ABOVE--------------------------------------------------
 //-------------------------------------------------------------------------------
@@ -212,25 +201,20 @@ class DashboardViewModel extends GetxController {
   void onInit() {
     super.onInit();
     swipeController.addListener(_onScroll);
-
   }
 
   int saltIndex = 1;
 
   void _onScroll() {
-    double scrollPosition = swipeController.position.pixels;
+    if (!swipeController.hasClients) return;
 
-    double itemWidth = Get.size.width;
-    int newIndex = (scrollPosition / itemWidth).round();
+    final double scrollPosition = swipeController.position.pixels;
+    final double itemWidth = Get.size.width;
+    final int index = (scrollPosition / itemWidth).round();
 
-    if (newIndex != visibleWidgetIndex) {
-      visibleWidgetIndex = newIndex as RxInt;
-    }
+    // Rx setters already skip notifications when the value is unchanged.
+    visibleWidgetIndex.value = index;
   }
-
-
-
-
 
   @override
   void dispose() {
@@ -239,7 +223,4 @@ class DashboardViewModel extends GetxController {
 
     super.dispose();
   }
-
-
-
 }

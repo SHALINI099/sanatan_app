@@ -16,7 +16,7 @@ import '../../dashboard/viewmodel/dashboard_view_model.dart';
 DashboardViewModel dashCtr = Get.put(DashboardViewModel());
 
 class DownloadShare {
-  static shareScreenShot(Uint8List img, String content) async {
+  static Future<void> shareScreenShot(Uint8List img, String content) async {
     Directory? directory = Platform.isAndroid
         ? await getExternalStorageDirectory()
         : await getApplicationDocumentsDirectory();
@@ -26,26 +26,30 @@ class DownloadShare {
     List<XFile> files = [XFile(imagePath.path)];
 
     if (Platform.isAndroid) {
-      SharePlus.instance.share( ShareParams(files: files, text: "${"downloadKare".tr} $content",));
+      SharePlus.instance.share(ShareParams(
+        files: files,
+        text: "${"downloadKare".tr} $content",
+      ));
     } else {
-      SharePlus.instance.share( ShareParams(files: files,));
+      SharePlus.instance.share(ShareParams(
+        files: files,
+      ));
     }
   }
 
-
-  static Future<bool> saveImage(BuildContext context,
-      Uint8List imageFromPhone) async {
+  static Future<bool> saveImage(Uint8List imageFromPhone) async {
     try {
-      EasyLoading.showToast("Downloading...", duration: const Duration(seconds: 1),);
-
-      String picturesPath = "${DateTime
-          .now()
-          .millisecondsSinceEpoch}.jpg";
-
-       await SaverGallery.saveImage(imageFromPhone,
-          fileName: picturesPath, skipIfExists: false);
       EasyLoading.showToast(
-          "Downloaded", duration: const Duration(milliseconds: 800));
+        "Downloading...",
+        duration: const Duration(seconds: 1),
+      );
+
+      String picturesPath = "${DateTime.now().millisecondsSinceEpoch}.jpg";
+
+      await SaverGallery.saveImage(imageFromPhone,
+          fileName: picturesPath, skipIfExists: false);
+      EasyLoading.showToast("Downloaded",
+          duration: const Duration(milliseconds: 800));
       return true;
     } catch (e) {
       return false;
@@ -86,11 +90,10 @@ class DownloadShare {
     }
   }
 
-  static Future<bool> downloadPost(
-      BuildContext context, GlobalKey boundaryKey) async {
+  static Future<bool> downloadPost(GlobalKey boundaryKey) async {
     final bytes = await captureBoundary(boundaryKey);
     if (bytes == null) return false;
-    return saveImage(context, bytes);
+    return saveImage(bytes);
   }
 
   // ---------- VIDEO ----------
@@ -141,7 +144,6 @@ class DownloadShare {
     try {
       final filename = 'wallpaper_${DateTime.now().millisecondsSinceEpoch}.jpg';
       final path = await _downloadToTemp(url, filename);
-
 
       if (path == null) return;
       await SharePlus.instance.share(ShareParams(

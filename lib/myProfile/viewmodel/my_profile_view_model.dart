@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:get/get.dart';
@@ -37,7 +36,6 @@ class MyProfileViewModel extends GetxController {
 
   final api = ProfileApi(buildDio());
 
-
   Rxn<GetProfileModel> profileModel = Rxn<GetProfileModel>();
 
   Future<void> userData() async {
@@ -59,23 +57,20 @@ class MyProfileViewModel extends GetxController {
           avatar.value = data.avatar ?? '';
           nameCtr.refresh();
           BharatStorage.setUserName(data.name);
-          BharatStorage.setLanguage(data.language??'hi');
+          BharatStorage.setLanguage(data.language);
           BharatStorage.setTrial(data.has_trial);
-          if(data.subscriptionType=='success'){
-           BharatStorage.setSubscription(true);
+          if (data.subscriptionType == 'success') {
+            BharatStorage.setSubscription(true);
             dashCtr.isSubsribed.value = true;
-          }else{
+          } else {
             BharatStorage.setSubscription(false);
             dashCtr.isSubsribed.value = false;
           }
-
         }
         setgetRxRequestStatus(Status.completed);
-      }
-      else if (res.response.statusCode == 401) {
+      } else if (res.response.statusCode == 401) {
         logOutUser(false);
-      }
-      else {
+      } else {
         setgetRxRequestStatus(Status.error);
         getApiError.value =
             "${res.response.statusCode.toString()}\n${res.response.statusMessage}";
@@ -105,11 +100,9 @@ class MyProfileViewModel extends GetxController {
         await setLocalData();
         EasyLoading.show(status: "uploaded");
         setpostRxRequestStatus(Status.completed);
-      }
-      else if (res.response.statusCode == 401) {
+      } else if (res.response.statusCode == 401) {
         logOutUser(false);
-      }
-      else {
+      } else {
         setpostRxRequestStatus(Status.error);
       }
     } catch (error) {
@@ -136,15 +129,14 @@ class MyProfileViewModel extends GetxController {
         await setLocalData();
         EasyLoading.showSuccess("Uploaded");
         EasyLoading.dismiss();
-      }
-      else if (res.response.statusCode == 401) {
+      } else if (res.response.statusCode == 401) {
         logOutUser(false);
+      } else {
+        EasyLoading.showError("Update failed (${res.response.statusCode})");
       }
-      else {
-
-      }
-    } catch(error) {
-
+    } catch (error) {
+      EasyLoading.showError("Update failed");
+      debugPrint('MyProfileViewModel.updateProfile: $error');
     }
   }
 

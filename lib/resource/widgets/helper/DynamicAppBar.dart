@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -13,11 +12,10 @@ class DynamicAppBar extends StatelessWidget implements PreferredSizeWidget {
   final bool isSubscribed;
 
   DynamicAppBar({
-    Key? key,
+    super.key,
     required this.isSubscribed,
     required this.profileCtr,
-  })  : preferredSize = const Size.fromHeight(kToolbarHeight),
-        super(key: key);
+  }) : preferredSize = const Size.fromHeight(kToolbarHeight);
   final DashboardViewModel dashCtr = Get.put(DashboardViewModel());
 
   @override
@@ -25,9 +23,8 @@ class DynamicAppBar extends StatelessWidget implements PreferredSizeWidget {
     return AppBar(
       elevation: 0,
       flexibleSpace: Container(
-        decoration:  BoxDecoration(
+        decoration: BoxDecoration(
           color: AppColors.primaryColor.withValues(alpha: 0.9),
-
         ),
       ),
       titleSpacing: 0,
@@ -37,13 +34,13 @@ class DynamicAppBar extends StatelessWidget implements PreferredSizeWidget {
               padding: const EdgeInsets.only(top: 15, bottom: 15, left: 0),
               child: Icon(
                 Icons.workspace_premium,
-                color: Colors.yellow.shade600,size: 30,
+                color: Colors.yellow.shade600,
+                size: 30,
               ),
             )
           : const SizedBox.shrink(),
-      title:  const Text("Islamic Posters",
+      title: const Text("Islamic Posters",
           style: TextStyle(fontSize: 25, color: Colors.white)),
     );
   }
-
 }

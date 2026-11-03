@@ -19,13 +19,15 @@ class _InvoicePageState extends State<InvoicePage> {
   final ExportDelegate exportDelegate = ExportDelegate();
   final InvoiceController controller = Get.put(InvoiceController());
 
-  Future<void> _savePdf(exportId) async {
+  Future<void> _savePdf(String exportId) async {
     final pdf = await exportDelegate.exportToPdfDocument(exportId);
     final dir = await getApplicationDocumentsDirectory();
-    final file = File("${dir.path}/payment_reciept.pdf");
+    final file = File("${dir.path}/payment_receipt.pdf");
     await file.writeAsBytes(await pdf.save());
 
-    await Share.shareXFiles([XFile(file.path)], text: "Invoice PDF");
+    await SharePlus.instance.share(
+      ShareParams(files: [XFile(file.path)], text: "Invoice PDF"),
+    );
   }
 
   @override
@@ -125,7 +127,6 @@ class InvoiceA4Page extends StatelessWidget {
                         //       style:
                         //       const TextStyle(fontWeight: FontWeight.bold)),
                         // ),
-
                       ],
                     ),
                     Column(
@@ -139,7 +140,6 @@ class InvoiceA4Page extends StatelessWidget {
                         //     decoration: BoxDecoration(color: Colors.grey[200]),
                         //     child: const Text("Balance Due: Rs.0.00",
                         //         style: TextStyle(fontWeight: FontWeight.bold))),
-
                       ],
                     ),
                   ],
@@ -156,7 +156,6 @@ class InvoiceA4Page extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Expanded(
-
                           child: Text("Item",
                               style: TextStyle(
                                   fontWeight: FontWeight.bold,
@@ -189,7 +188,7 @@ class InvoiceA4Page extends StatelessWidget {
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Expanded( child: Text(invoice.data.description)),
+                      Expanded(child: Text(invoice.data.description)),
                       Expanded(
                           child: Text(invoice.data.cgst,
                               textAlign: TextAlign.center)),
@@ -206,7 +205,7 @@ class InvoiceA4Page extends StatelessWidget {
                 const Padding(
                   padding: EdgeInsets.only(left: 8),
                   child:
-                  Text("HSN Code : 998319", style: TextStyle(fontSize: 10)),
+                      Text("HSN Code : 998319", style: TextStyle(fontSize: 10)),
                 ),
 
                 const SizedBox(
@@ -221,9 +220,9 @@ class InvoiceA4Page extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.end,
                     mainAxisAlignment: MainAxisAlignment.end,
                     spacing: 5,
-                    children:  [
-
-                      Text("Amount Paid: Rs.${invoice.data.unitPrice.toString()}"),
+                    children: [
+                      Text(
+                          "Amount Paid: Rs.${invoice.data.unitPrice.toString()}"),
                     ],
                   ),
                 ),

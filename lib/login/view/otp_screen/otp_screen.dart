@@ -16,11 +16,11 @@ import '../../../resource/widgets/helper/DynamicButton.dart';
 import '../../viewmodel/login_view_model.dart';
 import '../onboarding_screen/onboarding_page.dart';
 
-class  OtpPage extends StatelessWidget  {
+class OtpPage extends StatelessWidget {
   final String otp;
   final LoginViewModel loginCtr = Get.put(LoginViewModel());
 
-  OtpPage({Key? key, required this.otp});
+  OtpPage({super.key, required this.otp});
 
   final activePinTheme = PinTheme(
       width: 56,
@@ -117,7 +117,7 @@ class  OtpPage extends StatelessWidget  {
 
               const Spacer(),
               Obx(
-                    () {
+                () {
                   switch (loginCtr.rxOtpRequestStatus.value) {
                     case Status.initial:
                       return Padding(
@@ -128,14 +128,15 @@ class  OtpPage extends StatelessWidget  {
                           height: 45,
                           onTap: () {
                             if (loginCtr.otpCtr.value.text.isNotEmpty &&
-                                loginCtr.otpCtr.value.text.length == 6 ) {
+                                loginCtr.otpCtr.value.text.length == 6) {
                               loginCtr.otp();
-                            }
-                            else {
+                            } else {
                               Fluttertoast.showToast(
-                                msg: 'Invalid Otp',textColor: AppColors.primaryColor,
+                                msg: 'Invalid Otp',
+                                textColor: AppColors.primaryColor,
                                 backgroundColor: Colors.white,
-                              ).then((value) => loginCtr.setOtpRxRequestStatus(Status.initial));
+                              ).then((value) => loginCtr
+                                  .setOtpRxRequestStatus(Status.initial));
                             }
 
                             BharatStrings.facebookAppEvents.logEvent(
@@ -148,15 +149,17 @@ class  OtpPage extends StatelessWidget  {
                         ),
                       );
                     case Status.loading:
-                      return  Center(
-                        child: CircularProgressIndicator(color: AppColors.primaryColor,),
+                      return Center(
+                        child: CircularProgressIndicator(
+                          color: AppColors.primaryColor,
+                        ),
                       );
                     case Status.completed:
                       SchedulerBinding.instance.addPostFrameCallback((_) {
                         if (loginCtr.otpModel!.isOnboarded == true) {
-                          Get.offAll(()=>const DashboardScreen());
+                          Get.offAll(() => const DashboardScreen());
                         } else {
-                          Get.offAll(()=>const OnboardingPage());
+                          Get.offAll(() => const OnboardingPage());
                         }
 
                         BharatStrings.facebookAppEvents.logEvent(
@@ -172,7 +175,8 @@ class  OtpPage extends StatelessWidget  {
                       Fluttertoast.showToast(
                         msg: 'Invalid Otp',
                         backgroundColor: Colors.white,
-                      ).then((value) => loginCtr.setOtpRxRequestStatus(Status.initial));
+                      ).then((value) =>
+                          loginCtr.setOtpRxRequestStatus(Status.initial));
                       break;
                   }
                   return const SizedBox();
@@ -195,4 +199,3 @@ class  OtpPage extends StatelessWidget  {
     );
   }
 }
-
