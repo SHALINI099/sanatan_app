@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "160560088962",
+    "project_id": "sanatan-86950",
+    "storage_bucket": "sanatan-86950.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:160560088962:android:f353f3b1faa1e53f2f719b",
+        "android_client_info": {
+          "package_name": "com.alnico.sanatanapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyANM9XtLa-skh7njkwOMoJmVuRj_4TVJ9I"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

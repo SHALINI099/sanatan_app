@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="facebook_app_id">919024394087696</string>
+    <string name="facebook_client_token">87a223d8bd0ae47f168252df131d477a</string>
+    <string name="fb_login_protocol_scheme">fb880028454196837</string>
+    <string name="app_name">Om Shanti</string>
+</resources>

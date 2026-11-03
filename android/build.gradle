@@ -1,0 +1,53 @@
+
+buildscript {
+    ext.kotlin_version = '2.2.20'
+    repositories {
+        google()
+        mavenCentral()
+        maven {
+            url 'https://storage.googleapis.com/download.flutter.io'
+        }
+    }
+
+    dependencies {
+        classpath 'com.android.tools.build:gradle:8.9.1'
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+        classpath 'com.google.gms:google-services:4.4.2'
+    }
+}
+
+allprojects {
+    tasks.withType(JavaCompile) {
+        options.compilerArgs << "-Xlint:-deprecation"
+    }
+    configurations.all {
+        resolutionStrategy {
+            // C13. The two Razorpay SDKs (customui-core for Direct UPI, checkout/standard for
+            // the fallback sheet) have ZERO class overlap — they do coexist. What breaks is
+            // their shared transitive `com.razorpay:core`: one pulls 1.0.1 (3-arg
+            // BaseConfig.fetchConfig), the other 1.0.18 (4-arg). The skew surfaces as
+            // NoSuchMethodError at the moment checkout opens, i.e. in production, on the
+            // money path. Pin and forget.
+            force 'com.razorpay:standard-core:1.7.17'
+        }
+    }
+    repositories {
+        google()
+        mavenCentral()
+        maven {
+            url = uri("https://phonepe.mycloudrepo.io/public/repositories/phonepe-intentsdk-android")
+        }
+    }
+}
+
+rootProject.buildDir = "../build"
+subprojects {
+    project.buildDir = "${rootProject.buildDir}/${project.name}"
+}
+subprojects {
+    project.evaluationDependsOn(":app")
+}
+
+tasks.register("clean", Delete) {
+    delete rootProject.buildDir
+}
